@@ -190,3 +190,6 @@ dmypy.json
 
 # Ignore temporary trained model files:
 tmp_model/
+
+# Ignore local commands file:
+commands.txt
