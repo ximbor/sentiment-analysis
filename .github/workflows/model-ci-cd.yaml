@@ -1,0 +1,55 @@
+name: MLOps Pipeline
+
+on:
+  schedule:
+  - cron: '0 3 * * 1'
+  push:
+    branches: [ main ]
+
+jobs:
+  train_and_validate:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install Dependencies
+      run: |
+        pip install transformers[torch] datasets scikit-learn pandas
+
+    - name: Run Retraining and Validation
+      run: python src/retrain.py
+
+    - name: Integration Test
+      run: |
+        python src/monitor.py 
+
+  deploy:
+    needs: train_and_validate
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Install HF Hub
+      run: pip install huggingface_hub
+
+    - name: Push to HuggingFace Spaces/Hub
+      env:
+        HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      run: |
+        python -c "
+        from huggingface_hub import HfApi
+        api = HfApi()
+        api.upload_folder(
+            folder_path='./tmp_model',
+            repo_id='ximbor/sentiment-monitor',
+            repo_type='model',
+            token='${{ secrets.HF_TOKEN }}'
+        )"

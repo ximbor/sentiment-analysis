@@ -1,0 +1,23 @@
+name: App Deployment (CD)
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'main.py'
+      - 'Dockerfile'
+      - 'requirements.txt'
+  workflow_run:
+    workflows: ["Model Training (CI)"]
+    types: [completed]
+
+jobs:
+  build-and-push:
+    if: ${{ github.event_name == 'push' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Login and Push Docker
+        run: |
+          echo ${{ secrets.HF_TOKEN }} | docker login registry.hf.space -u ximbor --password-stdin
+          docker build -t registry.hf.space/ximbor/sentiment-api-service:latest .
+          docker push registry.hf.space/ximbor/sentiment-api-service:latest
