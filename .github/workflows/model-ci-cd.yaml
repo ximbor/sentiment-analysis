@@ -21,7 +21,7 @@ jobs:
         pip install transformers[torch] datasets scikit-learn pandas
 
     - name: Run Retraining and Validation
-      run: python src/retrain.py
+      run: python scripts/retrain.py
 
     - name: Integration Test
       run: |
