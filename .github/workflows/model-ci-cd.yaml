@@ -3,8 +3,6 @@ name: MLOps Pipeline
 on:
   schedule:
   - cron: '0 3 * * 1'
-  push:
-    branches: [ main ]
 
 jobs:
   train_and_validate:
