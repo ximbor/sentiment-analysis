@@ -15,6 +15,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Login and Push Docker
         run: |
+          IMAGE_NAME="registry.hf.space/ximbor-sentiment-analysis:latest"
           echo ${{ secrets.HF_TOKEN }} | docker login registry.hf.space -u ximbor --password-stdin
-          docker build -t registry.hf.space/ximbor/sentiment-api-service:latest .
-          docker push registry.hf.space/ximbor/sentiment-api-service:latest
+          docker build -t $IMAGE_NAME .
+          docker push $IMAGE_NAME
