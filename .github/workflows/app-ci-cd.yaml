@@ -6,9 +6,7 @@ on:
       - 'main.py'
       - 'Dockerfile'
       - 'requirements.txt'
-  workflow_run:
-    workflows: ["Model Training (CI)"]
-    types: [completed]
+  workflow_dispatch:
 
 jobs:
   build-and-push:
