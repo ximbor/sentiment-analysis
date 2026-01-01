@@ -12,7 +12,7 @@ def compute_metrics(eval_pred):
     }
 
 def train():
-    MODEL_NAME = "cardiffnlp/twitter-roberta-base-sentiment-latest"
+    MODEL_NAME = "ximbor/sentiment-monitor"
     LEARNING_RATE = 2e-5
     TRAIN_EPOCHS = 3
     TRAIN_BATCH_SIZE = 8
@@ -23,8 +23,8 @@ def train():
     dataset = load_dataset("tweet_eval", "sentiment")
     
     # Limit the dataset size due to the CPU limits:
-    dataset["train"] = dataset["train"].select(range(100)) 
-    dataset["test"] = dataset["test"].select(range(50))
+    dataset["train"] = dataset["train"].select(range(10))
+    dataset["test"] = dataset["test"].select(range(5))
 
     def tokenize_function(examples):
         return tokenizer(examples["text"], padding="max_length", truncation=True, max_length=128)
