@@ -18,12 +18,16 @@ jobs:
       with:
         python-version: '3.9'
 
-    - name: Install Dependencies
+    - name: Install dependencies
       run: |
-        pip install transformers[torch] datasets scikit-learn pandas pytest pytest-asyncio httpx
+        pip install transformers[torch] datasets scikit-learn pandas
 
     - name: Run Retraining and Validation
       run: python scripts/retrain.py
+
+    - name: Install test dependencies
+      run: |
+        pip install pytest pytest-asyncio httpx pydantic uvicorn fastapi
 
     - name: Run tests
       env:
