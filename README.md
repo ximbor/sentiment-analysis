@@ -3,7 +3,7 @@ Implementation and continuous monitoring of the sentiment analysis
 
 ---
 title: Sentiment Analisys
-emoji: 
+emoji: 😊
 colorFrom: yellow
 colorTo: green
 sdk: docker
