@@ -20,7 +20,7 @@ jobs:
 
     - name: Install Dependencies
       run: |
-        pip install transformers[torch] datasets scikit-learn pandas
+        pip install transformers[torch] datasets scikit-learn pandas pytest pytest-asyncio httpx
 
     - name: Run Retraining and Validation
       run: python scripts/retrain.py
