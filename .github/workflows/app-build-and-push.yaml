@@ -1,4 +1,4 @@
-name: app-build-and-push
+name: app-deploy
 on:
   push:
     branches: [ main ]
@@ -16,7 +16,7 @@ jobs:
         with:
           fetch-depth: 0
           lfs: true
-      - name: Push to HF
+      - name: Push to Hugging Face
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
