@@ -12,10 +12,20 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Login and Push Docker
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
+      - name: Push to HF
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          IMAGE_NAME="registry.hf.space/ximbor-sentiment-analysis:latest"
-          echo ${{ secrets.HF_TOKEN }} | docker login registry.hf.space -u ximbor --password-stdin
-          docker build -t $IMAGE_NAME .
-          docker push $IMAGE_NAME
+          # Configura l'identità Git
+          git config --global user.email "ximbor@example.com"
+          git config --global user.name "ximbor"
+          
+          # Aggiungi lo Space come repository remoto usando il token per l'autenticazione
+          git remote add hf https://ximbor:$HF_TOKEN@huggingface.co/spaces/ximbor/sentiment-analysis
+          
+          # Forza il push dei file. Questo attiverà la build automatica su HF.
+          git push --force hf main
