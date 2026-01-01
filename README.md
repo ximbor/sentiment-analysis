@@ -6,7 +6,7 @@ title: Sentiment Analisys
 emoji: 
 colorFrom: yellow
 colorTo: green
-sdk: static
+sdk: docker
 app_file: main.py
 pinned: false
 ---
