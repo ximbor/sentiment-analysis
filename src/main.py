@@ -6,7 +6,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
-MODEL_NAME = "ximbor/sentiment-analysis-model"
+MODEL_NAME = "ximbor/sentiment-monitor"
 NETWORK_INTERFACE = os.getenv("NETWORK_IF", "0.0.0.0")
 PORT = int(os.getenv("PORT", 8000))
 
