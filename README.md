@@ -1,8 +1,5 @@
-# sentiment-analysis
-Implementation and continuous monitoring of the sentiment analysis
-
 ---
-title: Sentiment Analisys
+title: Sentiment Analysis
 emoji: 😊
 colorFrom: yellow
 colorTo: green
