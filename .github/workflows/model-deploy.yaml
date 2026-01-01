@@ -1,4 +1,4 @@
-name: model-build
+name: model-deploy
 
 on:
   schedule:
@@ -27,7 +27,7 @@ jobs:
 
     - name: Integration Test
       run: |
-        python src/monitor.py 
+        python tests/test_main.py 
 
   deploy:
     needs: train_and_validate
