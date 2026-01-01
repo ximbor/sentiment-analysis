@@ -1,6 +1,6 @@
 import pytest
 from httpx import AsyncClient, ASGITransport
-from src.main import main as app
+from src.main import app
 
 @pytest.mark.asyncio
 async def test_predict_sentiment_success():
