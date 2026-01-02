@@ -1,0 +1,34 @@
+name: app-deploy
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
+
+      - name: Install dependencies
+        run: |
+          pip install pytest pytest-asyncio httpx pydantic uvicorn fastapi transformers[torch]
+
+      - name: Checkout model
+        run: |
+          python -c "
+          from transformers import pipeline
+          pipe = pipeline('sentiment-analysis', model='ximbor/sentiment-monitor')
+          pipe.save_pretrained('./tmp_model')
+          "
+
+      - name: Run tests
+        env:
+          PYTHONPATH: .
+          MODEL_NAME: "./tmp_model"
+        run: |
+          pytest -v -s tests/test_main.py
