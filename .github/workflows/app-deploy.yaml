@@ -18,7 +18,7 @@ jobs:
           fetch-depth: 0
           lfs: true
 
-      - name: Install test dependencies
+      - name: Install dependencies
         run: |
           pip install pytest pytest-asyncio httpx pydantic uvicorn fastapi transformers[torch]
 
@@ -29,9 +29,6 @@ jobs:
           pipe = pipeline('sentiment-analysis', model='ximbor/sentiment-monitor')
           pipe.save_pretrained('./tmp_model')
           "
-      - name: Install test dependencies
-        run: |
-          pip install pytest pytest-asyncio httpx pydantic uvicorn fastapi
 
       - name: Run tests
         env:
