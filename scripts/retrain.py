@@ -21,10 +21,9 @@ def train():
     model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME, num_labels=3)
 
     dataset = load_dataset("tweet_eval", "sentiment")
-    
-    # Limit the dataset size due to the CPU limits:
-    dataset["train"] = dataset["train"].select(range(10))
-    dataset["test"] = dataset["test"].select(range(5))
+
+    dataset["train"] = dataset["train"]
+    dataset["test"] = dataset["test"]
 
     def tokenize_function(examples):
         return tokenizer(examples["text"], padding="max_length", truncation=True, max_length=128)
