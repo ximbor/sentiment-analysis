@@ -61,90 +61,78 @@ Analyzes the input text and returns the predicted sentiment label (Positive/Neut
     -   **Content:** `{"detail": "Model not ready"}`  
   
 
-## 🚀 CI/CD workflows  
-This section describes the automated GitHub Actions workflows used to maintain and deploy the sentiment analysis system. These workflows ensure the model is regularly updated and the application is reliably deployed.
+## 🚀 CI/CD workflows
 
-----------
+This section provides a detailed overview of the automated GitHub Actions workflows used to manage the testing, training, and deployment of the sentiment analysis system.
 
-### 1. Model Retraining and Deployment (`model-deploy.yaml`)
+---
 
-This workflow automates the machine learning lifecycle, including scheduled retraining, validation, and model publishing.
+## 1. Pull Request Check (`pr-check.yaml`)
+This workflow acts as a quality gate, ensuring that any code changes proposed via a Pull Request do not break existing functionality.
 
--   **Triggers**:
-    
-    -   **Scheduled**: Runs automatically every Monday at 03:00 UTC.
-        
-    -   **Manual**: Can be triggered manually via `workflow_dispatch`.
-        
--   **Job: Train and Validate**:
-    
-    -   **Environment**: Uses `ubuntu-latest` with Python 3.9.
-        
-    -   **Execution**: Installs necessary ML libraries (`transformers`, `torch`, `scikit-learn`) and runs the `scripts/retrain.py` script.
-        
-    -   **Testing**: Validates the newly trained model using `pytest` against the application logic.
-        
-    -   **Artifacts**: Saves the trained model files as a temporary workflow artifact.
-        
--   **Job: Deploy**:
-    
-    -   **Condition**: Only executes on the `main` branch after successful training.
-        
-    -   **Action**: Downloads the model artifacts and pushes them to the **Hugging Face Model Hub** repository `ximbor/sentiment-monitor`.
-        
+* **Triggers**:
+    * **Pull Request**: Automatically runs when a PR is opened or updated targeting the `main` branch.
+    * **Manual**: Can be triggered manually using the `workflow_dispatch` event for ad-hoc testing.
+* **Key Job: Test**:
+    * **Environment Validation**: Downloads the current production model (`ximbor/sentiment-monitor`) from Hugging Face to ensure the new code is compatible with existing model weights.
+    * **Testing**: Executes the full test suite using `pytest` to validate API endpoints and inference logic.
 
-----------
+---
 
-### 2. Application Deployment (`app-deploy.yaml`)
+## 2. Model Retraining and Deployment (`model-deploy.yaml`)
+This workflow manages the Machine Learning operations (MLOps) cycle, specifically focusing on continuous training and model updates.
 
-This workflow handles the Continuous Integration (CI) and Continuous Deployment (CD) of the FastAPI web service to Hugging Face Spaces.
+* **Triggers**:
+    * **Scheduled**: Runs automatically every Monday at 03:00 UTC to incorporate new data.
+    * **Manual**: Can be triggered manually via `workflow_dispatch`.
+* **Key Jobs**:
+    * **Train and Validate**: Installs ML dependencies, runs the `scripts/retrain.py` script, and validates the resulting model with `pytest`.
+    * **Deploy**: If tests pass and the workflow is running on the `main` branch, it pushes the updated model to the **Hugging Face Model Hub**.
 
--   **Triggers**:
-    
-    -   **Code Push**: Triggered whenever changes are made to `main.py`, `Dockerfile`, or `requirements.txt` on the `main` branch.
-        
-    -   **Manual**: Can be triggered manually via `workflow_dispatch`.
-        
--   **Job: Test**:
-    
-    -   **Preparation**: Downloads the latest production model from the Hugging Face Hub.
-        
-    -   **Validation**: Runs integration tests using `httpx` and `pytest` to ensure the API correctly handles sentiment requests with the current model.
-        
--   **Job: Deploy**:
-    
-    -   **Action**: Uses Git LFS to push the application source code to **Hugging Face Spaces** (`ximbor/sentiment-analysis`).
-        
-    -   **Infrastructure**: The deployment utilizes the remote Hugging Face repository to host the containerized FastAPI application.
+---
+
+## 3. Application Deployment (`app-deploy.yaml`)
+This workflow handles the Continuous Deployment (CD) of the FastAPI application to the production environment.
+
+* **Triggers**:
+    * **Push**: Triggered by any push to the `main` branch that modifies `main.py`, `Dockerfile`, or `requirements.txt`.
+    * **Manual**: Can be triggered manually via `workflow_dispatch`.
+* **Key Jobs**:
+    * **Test**: Performs a final integration test of the application using the latest model from the Hub.
+    * **Deploy**: Pushes the updated application code and configuration to **Hugging Face Spaces**.
+
+---
+
+### Workflow Architecture Diagram
+
+The following Mermaid diagram visualizes how these workflows interact with each other and the Hugging Face ecosystem:
 
 ```mermaid
-graph LR
-    subgraph GitHub_Repo [GitHub repository]
+graph TD
+    subgraph GitHub_Repo [GitHub Actions Workflows]
+        PR[pr-check.yaml]
         M_WF[model-deploy.yaml]
         A_WF[app-deploy.yaml]
-        Code[(Source code)]
     end
 
-    subgraph CI_CD_Jobs [GitHub Actions Runners]
-        Train[Retraining & validation]
-        Test[Integration testing]
-    end
-
-    subgraph HF [Hugging Face Eco-system]
-        ModelHub[(Model hub: ximbor/sentiment-monitor)]
+    subgraph HF [Hugging Face Ecosystem]
+        Hub[(Model Hub: sentiment-monitor)]
         Spaces[[Spaces: sentiment-analysis]]
     end
 
+    %% PR Check Flow
+    PR -->|Runs Validation| Tests_PR[pytest]
+    Hub -.->|Downloads Model for Testing| Tests_PR
+
     %% Model Workflow Flow
-    M_WF -->|Trigger: Weekly / Manual| Train
-    Train -->|Push Model Artifacts| ModelHub
+    M_WF -->|Triggers Retraining| Train[scripts/retrain.py]
+    Train -->|Pushes New Weights| Hub
 
     %% App Workflow Flow
-    Code -->|Trigger: push main| A_WF
-    A_WF --> Test
-    ModelHub -.->|Download for testing| Test
-    Test -->|Git push| Spaces
+    A_WF -->|Final Inference Test| Tests_App[pytest]
+    Hub -.->|Downloads Model for Testing| Tests_App
+    Tests_App -->|Deploys Application Code| Spaces
 
-    %% Final Connection
-    Spaces -.->|Runtime inference| ModelHub
-```
+    %% Runtime Interaction
+    Spaces -.->|Loads Model at Runtime| Hub
+    ```
