@@ -27,7 +27,8 @@ jobs:
         run: |
           pytest -v -s tests/test_main.py
 
-  push:
+  deploy:
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
