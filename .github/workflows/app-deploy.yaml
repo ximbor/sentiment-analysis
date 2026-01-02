@@ -20,7 +20,7 @@ jobs:
 
       - name: Install test dependencies
         run: |
-          pip install pytest pytest-asyncio httpx pydantic uvicorn fastapi transformers
+          pip install pytest pytest-asyncio httpx pydantic uvicorn fastapi transformers[torch]
 
       - name: Checkout model
         run: |
@@ -29,6 +29,9 @@ jobs:
           pipe = pipeline('sentiment-analysis', model='ximbor/sentiment-monitor')
           pipe.save_pretrained('./tmp_model')
           "
+      - name: Install test dependencies
+        run: |
+          pip install pytest pytest-asyncio httpx pydantic uvicorn fastapi
 
       - name: Run tests
         env:
