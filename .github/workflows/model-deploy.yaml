@@ -34,7 +34,7 @@ jobs:
         PYTHONPATH: .
         MODEL_NAME: "./tmp_model"
       run: |
-        pytest -v -s tests/test_main-py
+        pytest -v -s tests/test_main.py
 
   deploy:
     needs: train_and_validate
