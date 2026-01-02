@@ -36,6 +36,13 @@ jobs:
       run: |
         pytest -v -s tests/test_main.py
 
+    - name: Upload Model Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: trained-model-files
+        path: tmp_model/
+        retention-days: 1
+
   deploy:
     needs: train_and_validate
     runs-on: ubuntu-latest
@@ -43,6 +50,12 @@ jobs:
     steps:
     - name: Checkout Code
       uses: actions/checkout@v3
+
+    - name: Download Model Artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: trained-model-files
+        path: tmp_model/
 
     - name: Install HF Hub
       run: pip install huggingface_hub
