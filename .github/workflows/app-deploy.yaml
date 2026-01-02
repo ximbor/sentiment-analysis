@@ -9,7 +9,25 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-push:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
+      - name: Install test dependencies
+        run: |
+          pip install pytest pytest-asyncio httpx pydantic uvicorn fastapi
+
+      - name: Run tests
+        env:
+          PYTHONPATH: .
+        run: |
+          pytest -v -s tests/test_main.py
+
+  push:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20,12 +38,7 @@ jobs:
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          # Configura l'identità Git
           git config --global user.email "ximbor@example.com"
           git config --global user.name "ximbor"
-          
-          # Aggiungi lo Space come repository remoto usando il token per l'autenticazione
           git remote add hf https://ximbor:$HF_TOKEN@huggingface.co/spaces/ximbor/sentiment-analysis
-          
-          # Forza il push dei file. Questo attiverà la build automatica su HF.
           git push --force hf main
