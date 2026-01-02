@@ -32,8 +32,9 @@ jobs:
     - name: Run tests
       env:
         PYTHONPATH: .
+        MODEL_NAME: "./tmp_model"
       run: |
-        pytest tests/
+        pytest -v -s tests/test_main-py
 
   deploy:
     needs: train_and_validate

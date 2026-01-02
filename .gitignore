@@ -188,8 +188,13 @@ dmypy.json
 # Ignore parquet files:
 *.parquet
 
-# Ignore temporary trained model files:
+# Ignore temporary trained model files and train results:
 tmp_model/
+scripts/results/
+results/
 
 # Ignore local commands file:
 commands.txt
+
+# Ignore BrainStorm files:
+.idea/
