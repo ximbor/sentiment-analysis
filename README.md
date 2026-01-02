@@ -109,30 +109,30 @@ The following Mermaid diagram visualizes how these workflows interact with each 
 
 ```mermaid
 graph TD
-    subgraph GitHub_Repo [GitHub Actions Workflows]
-        PR[pr-check.yaml]
-        M_WF[model-deploy.yaml]
-        A_WF[app-deploy.yaml]
-    end
+subgraph GitHub_Repo [GitHub Actions Workflows]
+	PR[pr-check.yaml]
+	M_WF[model-deploy.yaml]
+	A_WF[app-deploy.yaml]
+end
 
-    subgraph HF [Hugging Face Ecosystem]
-        Hub[(Model Hub: sentiment-monitor)]
-        Spaces[[Spaces: sentiment-analysis]]
-    end
+subgraph HF [Hugging Face Ecosystem]
+	Hub[(Model Hub: sentiment-monitor)]
+	Spaces[[Spaces: sentiment-analysis]]
+end
 
-    %% PR Check Flow
-    PR -->|Runs Validation| Tests_PR[pytest]
-    Hub -.->|Downloads Model for Testing| Tests_PR
+%% PR Check workflow
+PR -->|Runs Validation| Tests_PR[pytest]
+Hub -.->|Downloads Model for Testing| Tests_PR
 
-    %% Model Workflow Flow
-    M_WF -->|Triggers Retraining| Train[scripts/retrain.py]
-    Train -->|Pushes New Weights| Hub
+%% Model workflow
+M_WF -->|Triggers Retraining| Train[scripts/retrain.py]
+Train -->|Pushes New Weights| Hub
 
-    %% App Workflow Flow
-    A_WF -->|Final Inference Test| Tests_App[pytest]
-    Hub -.->|Downloads Model for Testing| Tests_App
-    Tests_App -->|Deploys Application Code| Spaces
+%% App workflow
+A_WF -->|Final Inference Test| Tests_App[pytest]
+Hub -.->|Downloads Model for Testing| Tests_App
+Tests_App -->|Deploys Application Code|Spaces
 
-    %% Runtime Interaction
-    Spaces -.->|Loads Model at Runtime| Hub
+%% Runtime Interaction
+Spaces -.->|Loads Model at Runtime| Hub
     ```
