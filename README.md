@@ -119,19 +119,19 @@ This workflow handles the Continuous Integration (CI) and Continuous Deployment 
 
 ```mermaid
 graph LR
-    subgraph GitHub_Repo [GitHub Repository]
+    subgraph GitHub_Repo [GitHub repository]
         M_WF[model-deploy.yaml]
         A_WF[app-deploy.yaml]
-        Code[(Source Code / Docker)]
+        Code[(Source code)]
     end
 
     subgraph CI_CD_Jobs [GitHub Actions Runners]
-        Train[Retraining & Validation]
-        Test[Integration Testing]
+        Train[Retraining & validation]
+        Test[Integration testing]
     end
 
-    subgraph HF [Hugging Face Ecosystem]
-        ModelHub[(Model Hub: ximbor/sentiment-monitor)]
+    subgraph HF [Hugging Face Eco-system]
+        ModelHub[(Model hub: ximbor/sentiment-monitor)]
         Spaces[[Spaces: sentiment-analysis]]
     end
 
@@ -140,11 +140,11 @@ graph LR
     Train -->|Push Model Artifacts| ModelHub
 
     %% App Workflow Flow
-    Code -->|Trigger: Push main| A_WF
+    Code -->|Trigger: push main| A_WF
     A_WF --> Test
-    ModelHub -.->|Download for Testing| Test
-    Test -->|Git Push| Spaces
+    ModelHub -.->|Download for testing| Test
+    Test -->|Git push| Spaces
 
     %% Final Connection
-    Spaces -.->|Runtime Inference| ModelHub
+    Spaces -.->|Runtime inference| ModelHub
 ```
