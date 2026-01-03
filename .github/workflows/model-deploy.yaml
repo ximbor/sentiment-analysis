@@ -91,7 +91,7 @@ jobs:
     runs-on: ubuntu-latest
     if: |
           github.ref == 'refs/heads/main' && 
-          needs.train_and_validate.outputs.improved_metrics == 'true'
+          needs.train_and_validate.outputs.should_deploy == 'true'
     steps:
     - name: Checkout Code
       uses: actions/checkout@v3
