@@ -87,8 +87,6 @@ def train():
     else:
         print(f"New model ({new_f1:.4f}) did not outperform current ({baseline_f1:.4f}).")
         print("Skipping...")
-        sys.exit(1)
-
 
 if __name__ == "__main__":
     train()
