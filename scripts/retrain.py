@@ -12,7 +12,6 @@ def compute_metrics(eval_pred):
         "f1_macro": f1_score(labels, predictions, average='macro')
     }
 
-
 def train():
     model_name = "ximbor/sentiment-monitor"
 
