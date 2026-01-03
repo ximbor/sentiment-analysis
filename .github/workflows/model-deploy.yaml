@@ -63,7 +63,7 @@ jobs:
         echo "| :--- | :---: | :---: " >> $GITHUB_STEP_SUMMARY
         echo "| **F1-Macro** | $BASELINE_F1 | $NEW_F1 " >> $GITHUB_STEP_SUMMARY
         echo "| **Accuracy** | $BASELINE_ACC | $NEW_ACC " >> $GITHUB_STEP_SUMMARY
-        echo "improved_metrics=IMPROVED_METRICS" >> $GITHUB_OUTPUT
+        echo "improved_metrics=$IMPROVED_METRICS" >> $GITHUB_OUTPUT
 
     - name: Install test dependencies
       if: steps.metrics_check.outputs.improved_metrics == 'true'
