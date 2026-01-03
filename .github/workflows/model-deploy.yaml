@@ -26,6 +26,8 @@ on:
 jobs:
   train_and_validate:
     runs-on: ubuntu-latest
+    outputs:
+      should_deploy: ${{ steps.metrics_check.outputs.improved_metrics }}
     steps:
     - name: Checkout Code
       uses: actions/checkout@v3
@@ -47,11 +49,24 @@ jobs:
         TRAIN_EPOCHS: ${{ github.event.inputs.train_epochs || '3' }}
       run: python scripts/retrain.py
 
+    - name: Generate Performance Summary
+      id: metrics_check
+      run: |
+        source metrics.env
+        echo "### 📊 Metrics report" >> $GITHUB_STEP_SUMMARY
+        echo "| Metric | Deployed model | Model tested | Result |" >> $GITHUB_STEP_SUMMARY
+        echo "| :--- | :---: | :---: | :---: |" >> $GITHUB_STEP_SUMMARY
+        echo "| **F1-Macro** | $BASELINE_F1 | $NEW_F1 | $([ \"IMPROVED_METRICS\" = \"true\" ] && echo \"✅\" || echo \"❌\") |" >> $GITHUB_STEP_SUMMARY
+        echo "| **Accuracy** | $BASELINE_ACC | $NEW_ACC | - |" >> $GITHUB_STEP_SUMMARY
+        echo "improved_metrics=IMPROVED_METRICS" >> $GITHUB_OUTPUT
+
     - name: Install test dependencies
+      if: steps.metrics_check.outputs.improved_metrics == 'true'
       run: |
         pip install pytest pytest-asyncio httpx pydantic uvicorn fastapi
 
     - name: Run tests
+      if: steps.metrics_check.outputs.improved_metrics == 'true'
       env:
         PYTHONPATH: .
         MODEL_NAME: "./tmp_model"
@@ -59,6 +74,7 @@ jobs:
         pytest -v -s tests/test_main.py
 
     - name: Upload Model Artifact
+      if: steps.metrics_check.outputs.improved_metrics == 'true'
       uses: actions/upload-artifact@v4
       with:
         name: trained-model-files
@@ -68,7 +84,9 @@ jobs:
   deploy:
     needs: train_and_validate
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    if: |
+          github.ref == 'refs/heads/main' && 
+          needs.train_and_validate.outputs.improved_metrics == 'true'
     steps:
     - name: Checkout Code
       uses: actions/checkout@v3
