@@ -87,7 +87,7 @@ def train():
         f.write(f"IMPROVED_METRICS={'true' if is_better else 'false'}\n")
 
     if is_better:
-        print(f"Improvement detected ({baseline_f1:.4f} -> {new_f1:.4f}).")
+        print(f"Improvement detected (F1: {baseline_f1:.4f} -> {new_f1:.4f}, Accuracy: {baseline_acc:.4f} -> {new_acc:.4f}).")
         trainer.save_model("./tmp_model")
         tokenizer.save_pretrained("./tmp_model")
         print("New model saved locally './tmp_model'.")
