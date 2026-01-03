@@ -5,6 +5,23 @@ on:
   - cron: '0 3 * * 1'
   
   workflow_dispatch:
+    inputs:
+      dataset_train_size:
+        description: 'Number of training samples (0 for all)'
+        required: false
+        default: '0'
+      dataset_test_size:
+        description: 'Number of testing samples (0 for all)'
+        required: false
+        default: '0'
+      learning_rate:
+        description: 'Learning rate (e.g., 2e-5)'
+        required: false
+        default: '2e-5'
+      train_epochs:
+        description: 'Number of training epochs'
+        required: false
+        default: '3'
 
 jobs:
   train_and_validate:
@@ -23,6 +40,11 @@ jobs:
         pip install transformers[torch] datasets scikit-learn pandas
 
     - name: Run Retraining and Validation
+      env:
+        DATASET_TRAIN_SIZE: ${{ github.event.inputs.dataset_train_size || '0' }}
+        DATASET_TEST_SIZE: ${{ github.event.inputs.dataset_test_size || '0' }}
+        LEARNING_RATE: ${{ github.event.inputs.learning_rate || '2e-5' }}
+        TRAIN_EPOCHS: ${{ github.event.inputs.train_epochs || '3' }}
       run: python scripts/retrain.py
 
     - name: Install test dependencies
