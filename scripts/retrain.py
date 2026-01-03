@@ -77,7 +77,7 @@ def train():
     new_acc = new_results["eval_accuracy"]
     print(f"New Model - F1: {new_f1:.4f}, Acc: {new_acc:.4f}")
 
-    is_better = new_f1 > baseline_f1
+    is_better = new_f1 > baseline_f1 and new_acc > baseline_acc
 
     with open("metrics.env", "w") as f:
         f.write(f"BASELINE_F1={baseline_f1:.4f}\n")
